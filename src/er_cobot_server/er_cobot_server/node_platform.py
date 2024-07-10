@@ -1,0 +1,65 @@
+import rclpy
+from rclpy.node import Node
+from pymycobot.mycobot import MyCobot
+
+from er_cobot_interface_cmake.msg import MycobotSetAngles
+from er_cobot_interface_cmake.msg import MycobotAngles  
+
+
+class NodePlatform(Node):
+
+    def __init__(self):
+        super().__init__('node_platform_server')
+        port = '/dev/ttyAMA0'
+        baud = 1000000
+        self.mc = MyCobot(port, baud)
+        ### Publishers ###
+        self.pub_angles = self.create_publisher(MycobotAngles, 'platform_server/angles', 10)
+        self.msg_angles = MycobotAngles()
+        ### Subscribers ###
+        self.create_subscription(MycobotSetAngles, 'platform_client/tgt_angles', self.callback_tgt, 10)
+        self.msg_tgt_angles = None
+        self.timer = self.create_timer(0.1, self.timer_callback)
+
+    def callback_tgt(self, msg):
+        self.msg_tgt_angles = msg
+
+    def timer_callback(self):
+
+        try:
+            angles = self.mc.get_angles()
+
+            self.msg_angles.joint_1 = angles[0]
+            self.msg_angles.joint_2 = angles[1]
+            self.msg_angles.joint_3 = angles[2]
+            self.msg_angles.joint_4 = angles[3]
+            self.msg_angles.joint_5 = angles[4]
+            self.msg_angles.joint_6 = angles[5]
+
+            self.pub_angles.publish(self.msg_angles)
+
+        except:
+            print("error in getting servo angles")
+
+
+        if self.msg_tgt_angles is not None:
+            ang = self.msg_tgt_angles
+            angles = [ang.joint_1, ang.joint_2, ang.joint_3, ang.joint_4, ang.joint_5, ang.joint_6]
+            sp = ang.speed
+            self.mc.send_angles(angles, sp)
+
+
+def main():
+    rclpy.init()
+    node_platform = NodePlatform()
+    rclpy.spin(node_platform)
+
+    # Destroy the node
+    node_platform.destroy_node()
+    node_platform.mc.set_color(255,255,255)
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+
+
