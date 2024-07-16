@@ -5,9 +5,9 @@ moveit_setup_assistant_config:
   srdf:
     relative_path: config/mycobot_280.srdf
   package_settings:
-    author_name: hyungjiny
+    author_name: hyoon
     author_email: hyoon@tntech.edu
-    generated_timestamp: 1720718811
+    generated_timestamp: 1721098993
   control_xacro:
     command:
       - position
