@@ -26,7 +26,6 @@ setup(
     entry_points={
         'console_scripts': [
             'node_platform_client = er_cobot_client.node_platform_client:main',
-            'node_state_publisher = er_cobot_client.state_publisher:main',
             'node_listener = er_cobot_client.node_listener:main',
         ],
     },
