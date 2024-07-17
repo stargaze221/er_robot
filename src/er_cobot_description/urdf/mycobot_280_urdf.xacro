@@ -229,13 +229,13 @@
 		   	<geometry>	
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/link7.dae"/>
 		  	</geometry>
-		  	<origin xyz = "0.0 0 -0.012 " rpy = "0 0 0"/>
+		  	<origin xyz = "0 0 -0.012 " rpy = "0 0 0"/>
 		</collision>
 	</link>
 
 	<link name="gripper_base">
 		<inertial>
-			<origin xyz="0 0 0.0" rpy="0 0 0"/>
+			<origin xyz="0.01 0.0 0.01" rpy="0 3.927 0"/>
 		  	<mass value="0.07"/>
 		  	<inertia
 				ixx="0.000010725" ixy="0.0" ixz="0.0"
@@ -246,19 +246,19 @@
 		  	<geometry>
 				<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_base.dae"/>
 		  	</geometry>
-		  	<origin xyz = "0.0 0.0 -0.012" rpy = "0 0 0"/>
+		  	<origin xyz = "0.01 0.0 0.01" rpy = "0 3.927 0"/>
 		</visual>
 		<collision>
 		   	<geometry>	
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_base.dae"/>
 		  	</geometry>
-		  	<origin xyz = "0.0 0.0 -0.012" rpy = "0 0 0"/>
+		  	<origin xyz = "0.01 0.0 0.01" rpy = "0 3.927 0"/>
 		</collision>
 	</link>
 
 	<link name="gripper_left1">
 		<inertial>
-			<origin xyz="0 0 0.0" rpy="0 0 0"/>
+			<origin xyz="0.01 0 0.02" rpy="0 3.927 0"/>
 		  	<mass value="0.007"/>
 		  	<inertia
 				ixx="1e-6" ixy="0.0" ixz="0.0"
@@ -269,19 +269,19 @@
 		  	<geometry>
 		  		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_left1.dae"/>
 		  	</geometry>
-			<origin xyz = "0.039 -0.0133 -0.012 " rpy = " 0 0 0"/>
+			<origin xyz = "0.045 -0.0133 0.012 " rpy = " 0 3.927 0"/>
 		</visual>
 		<collision>
 		  	<geometry>
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_left1.dae"/>
 		  	</geometry>
-			<origin xyz = "0.039 -0.0133 -0.012 " rpy = " 0 0 0"/>
+			<origin xyz = "0.045 -0.0133 0.012 " rpy = " 0 3.927 0"/>
 		</collision>
 	</link>
 	
 	<link name="gripper_left2">
 		<inertial>
-			<origin xyz="0 0 0.0" rpy="0 0 0"/>
+			<origin xyz="0 0 0.0" rpy="0 3.927 0"/>
 		  	<mass value="0.007"/>
 		  	<inertia
 				ixx="1e-6" ixy="0.0" ixz="0.0"
@@ -292,19 +292,19 @@
 		  	<geometry>
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_left2.dae"/>
 		  	</geometry>
-			<origin xyz = "0.005 -0.0195 -0.012 " rpy = " 0 0 0"/>
+			<origin xyz = "0.01 -0.0195 0.012 " rpy = " 0 3.927 0"/>
 		</visual>
 		<collision>
 		  	<geometry>
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_left2.dae"/>
 		  	</geometry>
-				<origin xyz = "0.005 -0.0195 -0.012 " rpy = " 0 0 0"/>
+				<origin xyz = "0.01 -0.0195 0.012 " rpy = " 0 3.927 0"/>
 		</collision>
 	</link>
 	
 	<link name="gripper_left3">
 		<inertial>
-			<origin xyz="0 0 0.0" rpy="0 0 0"/>
+			<origin xyz="0 0 0.0" rpy = "0 3.927 0"/>
 		  	<mass value="0.007"/>
 		  	<inertia
 				ixx="1e-6" ixy="0.0" ixz="0.0"
@@ -315,19 +315,19 @@
 		  	<geometry>
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_left3.dae"/>
 		  	</geometry>
-		<origin xyz = "0.012 0.0025 -0.012 " rpy = " 0 0 0"/>
+		<origin xyz = "0.017 0.0025 0.012 " rpy = "0 3.927 0"/>
 		</visual>
 		<collision>
 		  	<geometry>
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_left3.dae"/>
 		  	</geometry>
-			<origin xyz = "0.012 0.0025 -0.012" rpy = " 0 0 0"/>
+			<origin xyz = "0.017 0.0025 0.012" rpy = "0 3.927 0"/>
 		</collision>
 	</link>
 	
 	<link name="gripper_right1">
 		<inertial>
-			<origin xyz="0 0 0.0" rpy="0 0 0"/>
+			<origin xyz="0 0 0.0" rpy="0 3.927 0"/>
 		  	<mass value="0.007"/>
 		  	<inertia
 				ixx="1e-6" ixy="0.0" ixz="0.0"
@@ -338,19 +338,19 @@
 			<geometry>
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_right1.dae"/>
 		  	</geometry>
-			<origin xyz = "-0.039 -0.0133 -0.012 " rpy = " 0 0 0"/>
+			<origin xyz = "-0.03 -0.0133 0.006 " rpy = "0 3.927 0"/>
 		</visual>
 		<collision>
 		  	<geometry>
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_right1.dae"/>
 		  	</geometry>
-			<origin xyz = "-0.039 -0.0133 -0.012 " rpy = " 0 0 0"/>
+			<origin xyz = "-0.03 -0.0133 0.006 " rpy = "0 3.927 0"/>
 		</collision>
 	</link>
 	
 	<link name="gripper_right2">
 		<inertial>
-			<origin xyz="0 0 0.0" rpy="0 0 0"/>
+			<origin xyz="0 0 0.0" rpy="0 3.927 0"/>
 		  	<mass value="0.007"/>
 		  	<inertia
 				ixx="1e-6" ixy="0.0" ixz="0.0"
@@ -361,19 +361,19 @@
 			<geometry>
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_right2.dae"/>
 		 	</geometry>
-			<origin xyz = "-0.005 -0.0195 -0.012 " rpy = " 0 0 0"/>
+			<origin xyz = "0.005 -0.0195 0.006 " rpy = "0 3.927 0"/>
 		</visual>
 		<collision>
 		  	<geometry>
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_right2.dae"/>
 		  	</geometry>
-			<origin xyz = "-0.005 -0.0195 -0.012 " rpy = " 0 0 0"/>
+			<origin xyz = "0.005 -0.0195 0.006 " rpy = "0 3.927 0"/>
 		</collision>
 	</link>
 	
 	<link name="gripper_right3">
 		<inertial>
-			<origin xyz="0 0 0.0" rpy="0 0 0"/>
+			<origin xyz="0 0 0.0" rpy="0 3.927 0"/>
 		  	<mass value="0.007"/>
 		  	<inertia
 				ixx="1e-6" ixy="0.0" ixz="0.0"
@@ -384,13 +384,13 @@
 			<geometry>
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_right3.dae"/>
 			</geometry>
-			<origin xyz = "-0.012 0.0025 -0.012 " rpy = " 0 0 0"/>
+			<origin xyz = "0.005 0.0025 0.006 " rpy = "0 3.927 0"/>
 		</visual>
 		<collision>
 		  	<geometry>
 		   		<mesh filename="file://$(find er_cobot_description)/meshes/mycobot_280/gripper_right3.dae"/>
 		  	</geometry>
-			<origin xyz = "-0.012 0.0025 -0.012" rpy = " 0 0 0"/>
+			<origin xyz = "0.005 0.0025 0.006" rpy = "0 3.927 0"/>
 		</collision>
 	</link>
   
