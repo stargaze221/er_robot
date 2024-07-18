@@ -28,6 +28,31 @@ from rclpy.action import ActionServer
 import time
 
 
+def pack_np_array_from_MycobotAngles(cobotangles):
+    array = [ cobotangles.joint_1,
+              cobotangles.joint_2,
+              cobotangles.joint_3,
+              cobotangles.joint_4,
+              cobotangles.joint_5,
+              cobotangles.joint_6]
+    return np.array(array)
+
+def update_angles_msg_from_np_angles(msg, joint_angles):
+    msg.joint_1 = joint_angles[0]
+    msg.joint_2 = joint_angles[1]
+    msg.joint_3 = joint_angles[2]
+    msg.joint_4 = joint_angles[3]
+    msg.joint_5 = joint_angles[4]
+    msg.joint_6 = joint_angles[5]
+    return 0
+
+def update_set_angles_msg_from_angles_speed(msg, joint_angles, speed):
+    update_angles_msg_from_np_angles(msg, joint_angles)
+    msg.speed = speed
+    return 0
+
+
+
 #################
 ### ROS2 Node ###
 #################
@@ -43,22 +68,17 @@ class NodePlatform(Node):
         self.publisher_heartbeat = self.create_publisher(String, '/platform/heartbeat', qos_profile)
         self.heartbeat_msg = String()
         self.heartbeat_msg.data = "OK"
-        self.servo_angle_matmsg = MycobotSetAngles()
+        self.set_angle_msg = MycobotSetAngles()
 
-        self.servo_angle_matmsg.joint_1 = 0.
-        self.servo_angle_matmsg.joint_2 = 0.
-        self.servo_angle_matmsg.joint_3 = 0.
-        self.servo_angle_matmsg.joint_4 = 0.
-        self.servo_angle_matmsg.joint_5 = 0.
-        self.servo_angle_matmsg.joint_6 = 0.
-        self.servo_angle_matmsg.speed = 10
+        # Set initial position
+        initial_pos = np.array([0.,0.,0.,0.,0.,0.])
+        update_set_angles_msg_from_angles_speed(self.set_angle_msg, initial_pos, 10)
 
         ### Subscribers ###
         self.create_subscription(MycobotAngles, '/platform_server/angles', self.angles_callback, 10)
         self.msg_servo_angle = None
 
         ### Action Server ###
-
         self._action_server = ActionServer(
             self,
             FollowJointTrajectory,
@@ -66,34 +86,59 @@ class NodePlatform(Node):
             self.execute_callback)
 
         ### ROS2 Timer ###
-        timer_period = 0.1  # seconds
+        timer_period = 0.01  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
     def angles_callback(self, msg):
+        print('subsribed!')
         self.msg_servo_angle = msg
 
     def timer_callback(self):
-        self.publisher_tgt_angles.publish(self.servo_angle_matmsg)
-        self.publisher_heartbeat.publish(self.heartbeat_msg)    
+        self.publisher_tgt_angles.publish(self.set_angle_msg)
+        self.publisher_heartbeat.publish(self.heartbeat_msg)
 
-    def execute_callback(self, act_handle):
+
+    def execute_callback(self, goal_handle):
         self.get_logger().info('Executing action...')
-        
-        for point in act_handle.request.trajectory.points:
-        
-            joints = np.array(point.positions) * 180 / np.pi
-            self.servo_angle_matmsg.joint_1 = joints[0]  # degree
-            self.servo_angle_matmsg.joint_2 = joints[1]
-            self.servo_angle_matmsg.joint_3 = joints[2]
-            self.servo_angle_matmsg.joint_4 = joints[3]
-            self.servo_angle_matmsg.joint_5 = joints[4]
-            self.servo_angle_matmsg.joint_6 = joints[5]
-            self.servo_angle_matmsg.speed = 5
 
-            self.publisher_tgt_angles.publish(self.servo_angle_matmsg)
-            time.sleep(0.1)
+        feedback_msg = FollowJointTrajectory.Feedback()
+        
+        for desired_point in goal_handle.request.trajectory.points:
+
+            # desired postions
+            np_desired_positions = np.array(desired_point.positions)
+            feedback_msg.desired.positions = np_desired_positions.tolist()
+            
+
+            while True:
+
+                # actual positions
+                np_actual_positions = pack_np_array_from_MycobotAngles(self.msg_servo_angle) * (np.pi / 180)
+                feedback_msg.actual.positions = np_actual_positions.tolist()
+                print('actual:', np_actual_positions)
+                print('desired:', np_desired_positions)
+                
+                # error positions
+                np_error_positions = np_desired_positions -np_actual_positions
+                feedback_msg.error.positions = np_desired_positions.tolist()
+                error = np.linalg.norm(np_error_positions)
+
+                update_set_angles_msg_from_angles_speed(self.set_angle_msg, np_desired_positions * (180 / np.pi), 20)
+                self.publisher_tgt_angles.publish(self.set_angle_msg)
+                time.sleep(.1)
+
+                print('error:',error)
+                
+                if error < 0.2:
+                    break
+
+            update_set_angles_msg_from_angles_speed(self.set_angle_msg, np_desired_positions * (180 / np.pi), 20)
+            self.publisher_tgt_angles.publish(self.set_angle_msg)            
+
+        goal_handle.succeed()
 
         result = FollowJointTrajectory.Result()
+        result.error_code = int(0)
         
         return result
 
