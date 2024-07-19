@@ -1,10 +1,15 @@
 import rclpy
 from rclpy.node import Node
-from pymycobot.mycobot import MyCobot
+from rclpy.action import ActionServer
 
+from pymycobot.mycobot import MyCobot
 from er_cobot_interface_cmake.msg import MycobotSetAngles
 from er_cobot_interface_cmake.msg import MycobotAngles  
 
+from control_msgs.action import FollowJointTrajectory
+import numpy as np
+
+import time
 
 class NodePlatform(Node):
 
@@ -20,6 +25,57 @@ class NodePlatform(Node):
         self.create_subscription(MycobotSetAngles, 'platform_client/tgt_angles', self.callback_tgt, 10)
         self.msg_tgt_angles = None
         self.timer = self.create_timer(0.1, self.timer_callback)
+
+        ### Initial poistion ###
+        initial_position = [0., 0., 0., 0., 0., 0.]
+        sp = 20
+        self.mc.send_angles(initial_position, sp)
+
+        ### Action Server ###
+        self._action_server = ActionServer(
+            self,
+            FollowJointTrajectory,
+            '/arm_controller/follow_joint_trajectory',
+            self.execute_callback)
+            
+        
+    def execute_callback(self, goal_handle):
+        self.get_logger().info('Executing action...')
+
+        feedback_msg = FollowJointTrajectory.Feedback()
+
+        for desired_point in goal_handle.request.trajectory.points:
+
+            # desired postions
+            np_desired_positions = np.array(desired_point.positions)
+            feedback_msg.desired.positions = np_desired_positions.tolist()
+
+            # send angle command to MyCobot (mc)
+            tgt_angles = np_desired_positions * (180 / np.pi)
+            sp = 20
+            self.mc.send_angles(tgt_angles.tolist(), sp)
+
+            # get actual angle
+            np_actual_positions = np.array(self.mc.get_angles()) * (np.pi / 180)
+            feedback_msg.actual.positions = np_actual_positions.tolist()
+
+            # error positions
+            np_error_positions = np_desired_positions - np_actual_positions
+            feedback_msg.error.positions = np_desired_positions.tolist()
+            error = np.linalg.norm(np_error_positions)
+
+            while error > 0.1:
+                np_actual_positions = np.array(self.mc.get_angles()) * (np.pi / 180)
+                np_error_positions = np_desired_positions - np_actual_positions
+                self.mc.send_angles(tgt_angles.tolist(), sp)
+                time.sleep(.1)
+
+        goal_handle.succeed()
+
+        result = FollowJointTrajectory.Result()
+        result.error_code = int(0)
+        
+        return result
 
     def callback_tgt(self, msg):
         self.msg_tgt_angles = msg
@@ -48,7 +104,6 @@ class NodePlatform(Node):
             sp = ang.speed
             self.mc.send_angles(angles, sp)
 
-
 def main():
     rclpy.init()
     node_platform = NodePlatform()
@@ -61,5 +116,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
