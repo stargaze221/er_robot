@@ -28,7 +28,7 @@ class NodePlatform(Node):
 
         ### Initial poistion ###
         initial_position = [0., 0., 0., 0., 0., 0.]
-        sp = 20
+        sp =  10
         self.mc.send_angles(initial_position, sp)
 
         ### Action Server ###
@@ -37,8 +37,7 @@ class NodePlatform(Node):
             FollowJointTrajectory,
             '/arm_controller/follow_joint_trajectory',
             self.execute_callback)
-            
-        
+
     def execute_callback(self, goal_handle):
         self.get_logger().info('Executing action...')
 
@@ -52,7 +51,7 @@ class NodePlatform(Node):
 
             # send angle command to MyCobot (mc)
             tgt_angles = np_desired_positions * (180 / np.pi)
-            sp = 20
+            sp = 10
             self.mc.send_angles(tgt_angles.tolist(), sp)
 
             # get actual angle
@@ -65,10 +64,13 @@ class NodePlatform(Node):
             error = np.linalg.norm(np_error_positions)
 
             while error > 0.1:
+                print('error', error)
                 np_actual_positions = np.array(self.mc.get_angles()) * (np.pi / 180)
                 np_error_positions = np_desired_positions - np_actual_positions
+                error = np.linalg.norm(np_error_positions)
                 self.mc.send_angles(tgt_angles.tolist(), sp)
                 time.sleep(.1)
+
 
         goal_handle.succeed()
 

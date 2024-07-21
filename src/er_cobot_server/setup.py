@@ -25,7 +25,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'node_platform = er_cobot_server.node_platform:main',
+            'node_platform_server = er_cobot_server.node_platform_server:main',
         ],
     },
 )
